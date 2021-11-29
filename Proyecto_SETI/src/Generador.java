@@ -12,7 +12,7 @@ import java.util.concurrent.BlockingQueue;
  */
 public class Generador implements Runnable{
 
-	private BlockingQueue<String> cola;
+	private BlockingQueue<Tarea> cola;
 	private int id;
 	private BufferedReader bufferLectura;
 	
@@ -32,6 +32,7 @@ public class Generador implements Runnable{
 		System.out.println("Se ha creado el hilo generador corectamente");
 		System.out.println("ID = " + this.id);		
 	}
+
 	
 	
 	@Override
@@ -39,7 +40,10 @@ public class Generador implements Runnable{
 		
 		try {
 			while(this.bufferLectura.ready()) {
-				this.cola.put(bufferLectura.readLine());
+				String mensaje = bufferLectura.readLine();
+				Tarea tarea = new Tarea(this.id, mensaje);
+				
+				this.cola.put(tarea);
 			}
 		}catch(IOException e) {
 			e.printStackTrace();
