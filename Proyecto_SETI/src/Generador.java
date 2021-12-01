@@ -3,9 +3,9 @@ import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 
 /**
- * Lee lienas del fichero radiotelescopio.Por cada línea leida,
- *  creará una tarea nueva que añadirá a la CTE.
- *  Terminará su ejecuciaón cuando no queden mas líenas por leer
+ * Lee lienas del fichero radiotelescopio.Por cada lï¿½nea leida,
+ *  crearï¿½ una tarea nueva que aï¿½adirï¿½ a la CTE.
+ *  Terminarï¿½ su ejecuciaï¿½n cuando no queden mas lï¿½enas por leer
  * @param colaCompartida
  * @param id
  * @param bufferLectura
@@ -17,14 +17,14 @@ public class Generador implements Runnable{
 	private BufferedReader bufferLectura;
 	
 	/**
-	 * Lee lienas del fichero radiotelescopio.Por cada línea leida,
-	 *  creará una tarea nueva que añadirá a la CTE.
-	 *  Terminará su ejecuciaón cuando no queden mas líenas por leer
+	 * Lee lienas del fichero radiotelescopio.Por cada lï¿½nea leida,
+	 *  crearï¿½ una tarea nueva que aï¿½adirï¿½ a la CTE.
+	 *  Terminarï¿½ su ejecuciaï¿½n cuando no queden mas lï¿½enas por leer
 	 * @param colaCompartida
 	 * @param id
 	 * @param bufferLectura
 	 */
-	public Generador(BlockingQueue<String> colaCompartida, int id, BufferedReader bufferLectura) {
+	public Generador(BlockingQueue<Tarea> colaCompartida, int id, BufferedReader bufferLectura) {
 		this.cola = colaCompartida;
 		this.id = id;
 		this.bufferLectura = bufferLectura;
@@ -42,7 +42,7 @@ public class Generador implements Runnable{
 			while(this.bufferLectura.ready()) {
 				String mensaje = bufferLectura.readLine();
 				Tarea tarea = new Tarea(this.id, mensaje);
-				
+								
 				this.cola.put(tarea);
 			}
 		}catch(IOException e) {
