@@ -1,6 +1,8 @@
 import java.io.PrintWriter;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @brief Deciden si la tarea ha sido procesada con éxito, o bien se ha producido un error de cálculo en algún voluntario. Para ello, comparan los
@@ -13,8 +15,8 @@ public class Receptor implements Runnable{
     private BlockingQueue<Resultado> colaResultados;
     private Map<Integer, Integer> tareasEnProceso;
     private PrintWriter archivo_resultado;
-    private int id_buscar;
-    private int resultado_buscar;
+    private AtomicInteger id_buscar;
+    private AtomicInteger resultado_buscar;
     
     /**
      * 
@@ -35,39 +37,17 @@ public class Receptor implements Runnable{
         while(true){
 
             Resultado resultado = colaResultados.take();
-            this.id_buscar = resultado.getID();
-            this.resultado_buscar = resultado.getResultado()
-
-
-            Resultado resultado1 = colaResultados.take();
-            int id1 = resultado1.getID();
-            int resul1 = resultado1.getResultado();
-
-            Resultado resultado2 = colaResultados.take();
-            int id2 = resultado2.getID();
-            int resul2 = resultado2.getResultado();
-            
-
-            if(id1 != this.id_buscar){
-                tareasEnProceso.put(resultado1.getID(), resultado1.getResultado());   
-            }
-
-            if(id2 != this.id_buscar){
-                tareasEnProceso.put(resultado2.getID(), resultado2.getResultado());  
-            }
-            
-            if(id1 == this.id_buscar && id2 == this.id_buscar){
-                if(this.resultado_buscar == resul1 && resultado_buscar == resul2){
-                    archivo_resultado.println(this.resultado_buscar);
+                if(tareasEnProceso.containsKey(resultado.getID())){
+                   if(tareasEnProceso.get((resultado)==0)){
+                       tareasEnProceso.replace(resultado.getID(), resultado.getID());
+                   }else{
+                        if(tareasEnProceso.get((resultado) != resultado.getResultado())){
+                            tareasEnProceso.remove(resultado.getID());
+                        }   
+                   }
                     
                 }
-            }
-
-        }
-                        
-        
-    }    
-
+        }   
 
 }
 

@@ -1,6 +1,7 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Lee lienas del fichero radiotelescopio.Por cada l�nea leida,
@@ -13,10 +14,10 @@ import java.util.concurrent.BlockingQueue;
 public class Generador implements Runnable{
 
 	private BlockingQueue<Tarea> cola;
-	private int id;
+	private AtomicInteger id;
 	private BufferedReader bufferLectura;
-	private int id_tarea;
-	private int i;
+	private String mensaje;
+	
 	
 	/**
 	 * Lee lienas del fichero radiotelescopio.Por cada l�nea leida,
@@ -26,7 +27,7 @@ public class Generador implements Runnable{
 	 * @param id
 	 * @param bufferLectura
 	 */
-	public Generador(BlockingQueue<Tarea> colaCompartida, int id, BufferedReader bufferLectura) {
+	public Generador(BlockingQueue<Tarea> colaCompartida, AtomicInteger id, BufferedReader bufferLectura) {
 		this.cola = colaCompartida;
 		this.id = id;
 		this.bufferLectura = bufferLectura;
@@ -40,22 +41,27 @@ public class Generador implements Runnable{
 	@Override
 	public void run() {
 		while(true){
-			try {			
-				String mensaje = bufferLectura.readLine();
+			try {
+				synchronized(bufferLectura){ //CONCURRENCIA. BLOQUEA LA CPU 
+					this.mensaje = bufferLectura.readLine();
+			}catch(IOException e) {
+				e.printStackTrace();
+			}	
+			
+
 				if(mensaje != null){
-					Tarea tarea = new Tarea(this.id_tarea, mensaje);
-					this.cola.put(tarea);
-					this.id_tarea++;
+					Tarea tarea = new Tarea(this.id.incrementAndGet(), this.mensaje); ///CONCURRENCIA. Bloquea la CPU para incrementar el identificador de la tarea;
+					try{
+						this.cola.put(tarea); //CONCURRENCIA?¿? ---> PueDe haber concurrencia, pero la clase BlockingQueue soluciona esto 			
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+														
 				}	
 			}
-		}catch(IOException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}		
-	}
-	
-	
+
+		}
 
 }

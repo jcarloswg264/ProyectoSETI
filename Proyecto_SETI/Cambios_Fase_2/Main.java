@@ -8,23 +8,26 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Main {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
-		int contador_id = 0;
+		AtomicInteger contador_id = new AtomicInteger(0);
+		
 
 		static final String nombre_fichero_entrada;
 		static final String nombre_fichero_resultados;
 		
-		Map<Integer, Tarea> tareasEnProceso =new HashMap<Integer, Tarea>();
+		Map<AtomicInteger, Integer> tareasEnProceso =new HashMap<AtomicInteger, Integer>();
 
-		nombre_fichero_entrada = args[1];
-		nombre_fichero_resultados = args[2];
+		nombre_fichero_entrada = args[0];
+		nombre_fichero_resultados = args[1];
+		int numVoluntarios = Integer.parseInt(args[2]);
 
-		if(nombre_fichero_entrada.length()==0 || nombre_fichero_resultados.length()==0){
+		if(nombre_fichero_entrada.length() == 0 || nombre_fichero_resultados.length() == 0){
 			System.exit(-1);
 			System.out.println("No se han introducido parmetros de entrada");
 		}
@@ -34,10 +37,10 @@ public class Main {
 		PrintWriter printWriter = new PrintWriter(new OutputStreamWriter(new FileOutputStream(nombre_fichero_resultados)));
 
 		BlockingQueue<Tarea> colaTareasEntrantes;
-		colaTareasEntrantes = new ArrayBlockingQueue<Tarea>(10);
+		colaTareasEntrantes = new ArrayBlockingQueue<Tarea>(5);
 
-		BlockingQueue<Tarea> colaResultados;
-		colaResultados = new ArrayBlockingQueue<Tarea>(10);
+		BlockingQueue<Resultado> colaResultados;
+		colaResultados = new ArrayBlockingQueue<Resultado>(5);
 
 
 		Generador generador = new Generador(colaTareasEntrantes, contador_id, archivoLectura);
@@ -45,7 +48,7 @@ public class Main {
 		hilo_Generador.start();
 		contador_id ++;
 
-		Distribuidor distribuidor = new Distribuidor(colaTareasEntrantes,colaResultados,contador_id);
+		Distribuidor distribuidor = new Distribuidor(colaTareasEntrantes,colaResultados,contador_id,tareasEnProceso,numVoluntarios);
 		Thread hilo_Distribuidor = new Thread(distribuidor);
 		hilo_Distribuidor.start();
 		contador_id++;
