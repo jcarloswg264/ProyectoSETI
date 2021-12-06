@@ -1,10 +1,11 @@
 
 public class Tarea {
 	
-	public int id;
+	public Integer id;
 	public String mensaje;
+	public int resultados;
 	
-	public Tarea (int id, String mensaje) {
+	public Tarea (Integer id, String mensaje) {
 		this.id = id;
 		this.mensaje = mensaje;
 	}
